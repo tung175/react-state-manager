@@ -1,64 +1,55 @@
 import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { fetchUsers } from "../redux/user/user.slide";
-import UserCreateModal from "./modal/user.create.modal";
-import UserEditModal from "./modal/user.edit.modal";
-import UserDeleteModal from "./modal/user.delete.modal";
-import { IUsers } from "../types/users";
+import { IBlogs } from "../../types/blogs";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { fetchBlogs } from "../../redux/blogs/blogs.slide";
+import BlogCreateModal from "./modal/blog.create.modal";
+import BlogEditModal from "./modal/blog.edit.modal";
+import BlogDeleteModal from "./modal/blog.delete.modal";
 
-const UsersTable = () => {
+const BlogsTable = () => {
   const [showCreate, setShowCreate] = useState<boolean>(false);
   const [showEdit, setShowEdit] = useState<boolean>(false);
   const [showDelete, setShowDelete] = useState<boolean>(false);
-  const [dataUser, setDataUser] = useState({});
+  const [dataBlog, setDataBlog] = useState({});
 
   const handleCloseCreate = () => setShowCreate(false);
   const handleShowCreate = () => setShowCreate(true);
 
   const handleCloseEdit = () => setShowEdit(false);
 
-  const handleShowEdit = (user: IUsers) => {
+  const handleShowEdit = (blog: IBlogs) => {
     setShowEdit(true);
-    setDataUser(user);
+    setDataBlog(blog);
   };
 
   const handleCloseDelete = () => setShowDelete(false);
 
-  const handleShowDelete = (user: IUsers) => {
+  const handleShowDelete = (blog: IBlogs) => {
     setShowDelete(true);
-    setDataUser(user);
+    setDataBlog(blog);
   };
 
-  //   const [users, setUsers] = useState<IUsers[]>([]);
-  const users = useAppSelector((state) => state.user.listUser);
+  const blogs = useAppSelector((state) => state.blog.listBlog);
   const dispatch = useAppDispatch();
-  //   const fetchUsers = async () => {
-  //     const res = await fetch("http://localhost:8000/users");
-  //     const data = await res.json();
-  //     setUsers(data);
-  //   };
 
-  //   useEffect(() => {
-  //     fetchUsers()
-  //   }, [])
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchBlogs());
   }, []);
 
-  console.log(users);
+  console.log(blogs);
 
   return (
     <>
       <div className="header-table d-flex justify-content-between align-items-center">
-        <div className="title h3">Table Users</div>
+        <div className="title h3">Table Blogs</div>
         <div className="btn-add-new">
           <button
             className="btn btn-success"
             onClick={() => handleShowCreate()}
           >
-            Add new a user
+            Add new a blog
           </button>
         </div>
       </div>
@@ -66,28 +57,30 @@ const UsersTable = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Author</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {users?.map((user) => {
+          {blogs?.map((blog) => {
             return (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
+              <tr key={blog.id}>
+                <td>{blog.id}</td>
+                <td>{blog.title}</td>
+                <td>{blog.content}</td>
+                <td>{blog.author}</td>
                 <td>
                   <button
                     className="btn btn-warning mx-3"
-                    onClick={() => handleShowEdit(user)}
+                    onClick={() => handleShowEdit(blog)}
                   >
                     Edit
                   </button>
                   <button
                     className="btn btn-danger"
-                    onClick={() => handleShowDelete(user)}
+                    onClick={() => handleShowDelete(blog)}
                   >
                     Delete
                   </button>
@@ -98,26 +91,26 @@ const UsersTable = () => {
         </tbody>
       </Table>
 
-      <UserCreateModal
+      <BlogCreateModal
         show={showCreate}
         handleClose={handleCloseCreate}
         setShow={setShowCreate}
       />
 
-      <UserEditModal
+      <BlogEditModal
         show={showEdit}
         handleClose={handleCloseEdit}
-        dataUser={dataUser}
+        dataBlog={dataBlog}
         setShow={setShowEdit}
       />
-      <UserDeleteModal
+      <BlogDeleteModal
         handleClose={handleCloseDelete}
         show={showDelete}
-        dataUser={dataUser}
+        dataBlog={dataBlog}
         setShow={setShowDelete}
       />
     </>
   );
 };
 
-export default UsersTable;
+export default BlogsTable;
