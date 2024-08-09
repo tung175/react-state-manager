@@ -2,13 +2,23 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const UserCreateModal = (props: any) => {
-    const { isOpenCreateModal, setIsOpenCreateModal } = props;
+const UserEditModal = (props: any) => {
+    const { isOpenUpdateModal, setIsOpenUpdateModal, dataUser } = props;
+    const [id, setId] = useState();
 
     const [email, setEmail] = useState<string>("");
     const [name, setName] = useState<string>("");
+
+    useEffect(() => {
+        if (dataUser?.id) {
+            setId(dataUser?.id);
+            setEmail(dataUser?.email);
+            setName(dataUser?.name)
+        }
+    }, [dataUser])
+
 
     const handleSubmit = () => {
         if (!email) {
@@ -19,22 +29,21 @@ const UserCreateModal = (props: any) => {
             alert("name empty");
             return;
         }
-        //call api => call redux
-        console.log({ email, name }) //payload
+        console.log({ email, name, id })
     }
 
     return (
         <>
             <Modal
-                show={isOpenCreateModal}
+                show={isOpenUpdateModal}
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 backdrop={false}
-                onHide={() => setIsOpenCreateModal(false)}
+                onHide={() => setIsOpenUpdateModal(false)}
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Add A New User
+                        Update A User
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -59,12 +68,12 @@ const UserCreateModal = (props: any) => {
                 <Modal.Footer>
                     <Button
                         variant='warning'
-                        onClick={() => setIsOpenCreateModal(false)} className='mr-2'>Cancel</Button>
-                    <Button onClick={() => handleSubmit()}>Save</Button>
+                        onClick={() => setIsOpenUpdateModal(false)} className='mr-2'>Cancel</Button>
+                    <Button onClick={() => handleSubmit()}>Confirm</Button>
                 </Modal.Footer>
             </Modal>
         </>
     )
 }
 
-export default UserCreateModal;
+export default UserEditModal;

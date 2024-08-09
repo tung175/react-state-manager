@@ -1,40 +1,80 @@
-import { useEffect } from "react";
-import { Table } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { fetchUsers } from "../redux/user/user.slide";
+import { forwardRef, useState } from "react";
+import { Button, OverlayTrigger, Popover, Table } from "react-bootstrap";
+import UsersPagination from "./pagination/users.pagination";
+import UserCreateModal from "./modal/user.create.modal";
+import UserEditModal from "./modal/user.edit.modal";
+import UserDeleteModal from "./modal/user.delete.modal";
+import { IUsers } from "../types/users";
 
 const UsersTable = () => {
-  //   const [users, setUsers] = useState<IUsers[]>([]);
-  const users = useAppSelector((state) => state.user.listUser);
-  const dispatch = useAppDispatch();
-  //   const fetchUsers = async () => {
-  //     const res = await fetch("http://localhost:8000/users");
-  //     const data = await res.json();
-  //     setUsers(data);
-  //   };
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
 
-  //   useEffect(() => {
-  //     fetchUsers()
-  //   }, [])
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
+  const [dataUser, setDataUser] = useState({});
 
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, []);
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
 
-  console.log(users);
+  const users = [
+    {
+      id: 1,
+      name: "Tung",
+      email: "duongkq3@gmail.com",
+    },
+    {
+      id: 2,
+      name: "Duong",
+      email: "spam@gmail.com",
+    },
+    {
+      id: 3,
+      name: "Han Han",
+      email: "admin@gmail.com",
+    },
+  ];
+
+  const handleEditUser = (user: IUsers) => {
+    setDataUser(user);
+    setIsOpenUpdateModal(true);
+  };
+
+  const handleDelete = (user: IUsers) => {
+    setDataUser(user);
+    setIsOpenDeleteModal(true);
+  };
+
+  const PopoverComponent = forwardRef((props: any, ref: any) => {
+    const { id } = props;
+
+    return (
+      <Popover ref={ref} {...props}>
+        <Popover.Header as="h3">Detail User</Popover.Header>
+        <Popover.Body>
+          <div>ID = {id}</div>
+          <div>Name = ?</div>
+          <div>Email = ?</div>
+        </Popover.Body>
+      </Popover>
+    );
+  });
 
   return (
     <>
-      <div className="header-table d-flex justify-content-between align-items-center">
-        <div className="title h3">Table Users</div>
-        <div className="btn-add-new">
-          <button className="btn btn-success">Add new a user</button>
-        </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          margin: "15px 0",
+        }}
+      >
+        <h4>Table Users</h4>
+        <Button variant="primary" onClick={() => setIsOpenCreateModal(true)}>
+          Add New
+        </Button>
       </div>
-      <Table striped bordered hover className="my-3">
+      <Table striped bordered hover>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Id</th>
             <th>Name</th>
             <th>Email</th>
             <th>Actions</th>
@@ -44,18 +84,53 @@ const UsersTable = () => {
           {users?.map((user) => {
             return (
               <tr key={user.id}>
-                <td>{user.id}</td>
+                <OverlayTrigger
+                  trigger="click"
+                  placement="right"
+                  rootClose
+                  overlay={<PopoverComponent id={user.id} />}
+                >
+                  <td>
+                    <a href="#">{user.id}</a>
+                  </td>
+                </OverlayTrigger>
+
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>
-                  <button className="btn btn-warning mx-3">Edit</button>
-                  <button className="btn btn-danger">Delete</button>
+                  <Button
+                    variant="warning"
+                    onClick={() => handleEditUser(user)}
+                  >
+                    Edit
+                  </Button>
+                  &nbsp;&nbsp;&nbsp;
+                  <Button variant="danger" onClick={() => handleDelete(user)}>
+                    Delete
+                  </Button>
                 </td>
               </tr>
             );
           })}
         </tbody>
       </Table>
+      <UsersPagination totalPages={0} />
+      <UserCreateModal
+        isOpenCreateModal={isOpenCreateModal}
+        setIsOpenCreateModal={setIsOpenCreateModal}
+      />
+
+      <UserEditModal
+        isOpenUpdateModal={isOpenUpdateModal}
+        setIsOpenUpdateModal={setIsOpenUpdateModal}
+        dataUser={dataUser}
+      />
+
+      <UserDeleteModal
+        dataUser={dataUser}
+        isOpenDeleteModal={isOpenDeleteModal}
+        setIsOpenDeleteModal={setIsOpenDeleteModal}
+      />
     </>
   );
 };
