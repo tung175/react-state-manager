@@ -1,12 +1,11 @@
-
+import { Outlet } from "react-router-dom";
 import Header from "./components/header";
-import TabsContent from "./components/tabs.content";
 
 function App() {
   return (
     <>
       <Header />
-      <TabsContent />
+      <Outlet />
     </>
   );
 }
