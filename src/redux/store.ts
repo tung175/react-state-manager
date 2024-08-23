@@ -3,12 +3,14 @@ import createSagaMiddleware from "redux-saga";
 import counterReducer from "./counter/counter.slide";
 import userReducer from "./user/user.slide";
 import RootSaga from "../saga/root.saga";
+import blogReducer from "./blog/blog.slide";
 
 const sagaMiddleware = createSagaMiddleware();
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
     user: userReducer,
+    blog: blogReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sagaMiddleware),

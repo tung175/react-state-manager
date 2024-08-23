@@ -1,13 +1,18 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAction, createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 
 export interface CounterState {
-  value: number
+  value: number;
+  status: "idle" | "loading" | "failed"
 }
 
 const initialState: CounterState = {
   value: 0,
+  status: "idle"
 }
+
+export const  incrementSagaFinish = createAction<{value: number}>("incrementSagaFinish")
+export const  decrementSagaFinish = createAction<{value: number}>("decrementSagaFinish")
 
 export const counterSlice = createSlice({
   name: 'counter',
@@ -26,10 +31,35 @@ export const counterSlice = createSlice({
     incrementByAmount: (state, action: PayloadAction<number>) => {
       state.value += action.payload
     },
+    incrementSagaStart: (state) => {
+      state.status = "loading"
+    },
+    incrementSagaFinish: (state, action) => {
+      state.status = "idle"
+      state.value += action.payload.value
+    },
+    decrementSagaStart: (state) => {
+      state.status = "loading"
+    },
+    decrementSagaFinish: (state, action) => {
+      state.status = "idle"
+      state.value -= action.payload.value
+    },
   },
+  extraReducers: (builder) => {
+    builder
+    .addCase(incrementSagaFinish, (state, action) => {
+      state.status = "idle"
+      state.value += action.payload.value
+    })
+    .addCase(decrementSagaFinish, (state, action) => {
+      state.status = "idle"
+      state.value -= action.payload.value
+    })
+  }
 })
 
 // Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount } = counterSlice.actions
+export const { increment, decrement, incrementByAmount, incrementSagaStart, decrementSagaStart } = counterSlice.actions
 
 export default counterSlice.reducer
